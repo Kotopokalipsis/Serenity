@@ -1,0 +1,12 @@
+﻿using Application.Common.Interfaces.Application.Responses;
+
+namespace Application.Common.Responses
+{
+    public class ErrorResponse<T> : BaseResponse<T>, IErrorResponse where T : class
+    {
+        public string StackTrace { get; set; }
+        public string ErrorMessage { get; set; }
+        public string ErrorStatus { get; set; }
+        public Dictionary<string, List<string>> Errors { get; set; }
+    }
+}
