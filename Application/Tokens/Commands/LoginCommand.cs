@@ -39,7 +39,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, IBaseResponse<Token>>
     public async Task<IBaseResponse<Token>> Handle(LoginCommand request, CancellationToken ct)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user.IsTransient())
+        if (user == null)
         {
             return new ErrorResponse<Token>
             {
