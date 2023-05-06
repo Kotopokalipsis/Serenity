@@ -175,6 +175,14 @@ namespace Web
 
             app.UseRouting();
 
+            app.UseCors(policyBuilder =>
+            {
+                policyBuilder
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+
             app.UseAuthentication();
             app.UseAuthorization();
 
