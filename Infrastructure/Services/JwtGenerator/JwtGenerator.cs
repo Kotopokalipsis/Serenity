@@ -35,7 +35,7 @@ namespace Infrastructure.Services.JwtGenerator
 
         private static string CreateToken(Guid id, DateTime expires, SecurityKey key)
         {
-            var claims = new List<Claim> { new(JwtRegisteredClaimNames.Jti, id.ToString()) };
+            var claims = new List<Claim> { new("userId", id.ToString()) };
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

@@ -1,11 +1,7 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Common.Interfaces.Application.Services;
+﻿using Application.Common.Interfaces.Application.Services;
 using Application.Common.Interfaces.Infrastructure.Services;
 using Application.Common.Interfaces.Infrastructure.UnitOfWork;
 using Domain.Entities;
-using JetBrains.Annotations;
 using Microsoft.AspNetCore.Identity;
 
 namespace Application.Common.Services.TokenHelper;
@@ -47,8 +43,7 @@ public class TokenHelper : ITokenHelper
     {
         return _jwtGenerator.CreateAccessToken(user.Id);
     }
-
-    [ItemCanBeNull]
+    
     public async Task<User> GetUserByRefreshToken(string refreshToken)
     {
         var blacklist = 
@@ -62,7 +57,7 @@ public class TokenHelper : ITokenHelper
         var user = 
             await _userManager.FindByIdAsync(
                 claims
-                    .Where(x => x.Type == "jti")
+                    .Where(x => x.Type == "userId")
                     .Select(x => x.Value)
                     .FirstOrDefault()
             );
