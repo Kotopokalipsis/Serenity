@@ -59,9 +59,10 @@ namespace Web
             services.AddCors(options => options.AddPolicy("Cors", corsPolicyBuilder =>
                 {
                     corsPolicyBuilder
-                        .AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .SetIsOriginAllowed(origin => true) // allow any origin
+                        .AllowCredentials();
                 }
             ));
         }
@@ -175,13 +176,7 @@ namespace Web
 
             app.UseRouting();
 
-            app.UseCors(policyBuilder =>
-            {
-                policyBuilder
-                    .AllowAnyOrigin()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
+            app.UseCors("Cors");
 
             app.UseAuthentication();
             app.UseAuthorization();
