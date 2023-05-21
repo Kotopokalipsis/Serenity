@@ -111,6 +111,7 @@ namespace Web
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 5;
                 options.Password.RequiredUniqueChars = 0;
+                options.User.RequireUniqueEmail = true;
             });
         }
 

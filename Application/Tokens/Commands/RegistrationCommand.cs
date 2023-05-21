@@ -39,7 +39,18 @@ public class RegistrationHandler : IRequestHandler<RegistrationCommand, IBaseRes
             Email = request.Email,
             UserName = request.UserName
         };
-            
+
+        var existedEmail = await _userManager.FindByEmailAsync(request.Email);
+        
+        if (existedEmail != null)
+        {
+            return new ErrorResponse<Token>
+            {
+                StatusCode = 400,
+                Errors = new Dictionary<string, List<string>>{{"CreateError", new List<string>() {"Email is already used"}}},
+            };
+        }
+        
         var result = await _userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
