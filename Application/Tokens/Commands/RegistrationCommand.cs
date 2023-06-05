@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces.Application.Responses;
 using Application.Common.Interfaces.Infrastructure.UnitOfWork;
 using Application.Common.Responses;
+using Application.Common.Services.ResponseHelper;
 using Ardalis.GuardClauses;
 using Domain.Entities;
 using Domain.Models;
@@ -44,11 +45,7 @@ public class RegistrationHandler : IRequestHandler<RegistrationCommand, IBaseRes
         
         if (existedEmail != null)
         {
-            return new ErrorResponse<Token>
-            {
-                StatusCode = 400,
-                Errors = new Dictionary<string, List<string>>{{"CreateError", new List<string>() {"Email is already used"}}},
-            };
+            return ResponseHelper<Token>.GetEmailIsAlreadyUsedErrorResponse();
         }
         
         var result = await _userManager.CreateAsync(user, request.Password);

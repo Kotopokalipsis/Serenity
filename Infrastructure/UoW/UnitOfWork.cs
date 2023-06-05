@@ -18,6 +18,21 @@ public class UnitOfWork : IUnitOfWork
     public IUserRepository _userRepository;
     public IUserRepository UserRepository => _userRepository ??= GetService<IUserRepository>();
 
+    public IMedicalCardRepository _medicalCardRepository;
+    public IMedicalCardRepository MedicalCardRepository => _medicalCardRepository ??= GetService<IMedicalCardRepository>();
+
+    public IRecordRepository _recordRepository;
+    public IRecordRepository RecordRepository => _recordRepository ??= GetService<IRecordRepository>();
+
+    public IServiceCategoryRepository _serviceCategoryRepository;
+    public IServiceCategoryRepository ServiceCategoryRepository => _serviceCategoryRepository ??= GetService<IServiceCategoryRepository>();
+
+    public IServiceTypeRepository _serviceTypeRepository;
+    public IServiceTypeRepository ServiceTypeRepository => _serviceTypeRepository ??= GetService<IServiceTypeRepository>();
+
+    public ITagRepository _tagRepository;
+    public ITagRepository TagRepository => _tagRepository ??= GetService<ITagRepository>();
+
     public UnitOfWork(ApplicationContext context, IServiceProvider serviceProvider)
     {
         _context = context;

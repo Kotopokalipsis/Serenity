@@ -12,13 +12,15 @@ public class TokenHelper : ITokenHelper
     private readonly IUnitOfWork _unitOfWork;
     private readonly IJwtReader _jwtReader;
     private readonly UserManager<User> _userManager;
+    private readonly ICookieHelper _cookieHelper;
 
-    public TokenHelper(IJwtGenerator jwtGenerator, IUnitOfWork unitOfWork, IJwtReader jwtReader, UserManager<User> userManager)
+    public TokenHelper(IJwtGenerator jwtGenerator, IUnitOfWork unitOfWork, IJwtReader jwtReader, UserManager<User> userManager, ICookieHelper cookieHelper)
     {
         _jwtGenerator = jwtGenerator;
         _unitOfWork = unitOfWork;
         _jwtReader = jwtReader;
         _userManager = userManager;
+        _cookieHelper = cookieHelper;
     }
 
     public async Task<string> GenerateNewRefreshToken(User user)
@@ -44,8 +46,12 @@ public class TokenHelper : ITokenHelper
         return _jwtGenerator.CreateAccessToken(user.Id);
     }
     
-    public async Task<User> GetUserByRefreshToken(string refreshToken)
+    public async Task<User> GetUserByRefreshToken()
     {
+        var refreshToken = _cookieHelper.GetRefreshTokenFromCookie();
+        
+        if (string.IsNullOrEmpty(refreshToken)) return null;
+        
         var blacklist = 
             await _unitOfWork.RefreshTokenBlacklistRepository
                 .FindOneBy(x => x.RefreshToken == refreshToken);
@@ -62,8 +68,24 @@ public class TokenHelper : ITokenHelper
                     .FirstOrDefault()
             );
 
-        if (user == null) return null;
+        if (user != null && DateTime.Now.ToUniversalTime() <= user.RefreshTokenExpirationTime)
+            return DateTime.Now.ToUniversalTime() < user.RefreshTokenExpirationTime ? user : null;
 
-        return DateTime.Now.ToUniversalTime() < user.RefreshTokenExpirationTime ? user : null;
+        await BanRefreshToken(refreshToken);
+
+        return null;
+    }
+
+    public async Task BanRefreshToken(string refreshToken = null)
+    {
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            refreshToken = _cookieHelper.GetRefreshTokenFromCookie();
+        }
+
+        if (string.IsNullOrEmpty(refreshToken)) return;
+        
+        _unitOfWork.RefreshTokenBlacklistRepository.Add(new RefreshTokenBlacklist { RefreshToken = refreshToken });
+        await _unitOfWork.Commit();
     }
 }

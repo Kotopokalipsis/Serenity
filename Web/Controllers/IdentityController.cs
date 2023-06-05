@@ -60,12 +60,5 @@ namespace Web.Controllers
             
             return StatusCode(result.StatusCode, result);
         }
-        
-        [HttpGet("get-something")]
-        [Authorize]
-        public async Task<ActionResult> Get()
-        {
-            return StatusCode(401);
-        }
     }
 }

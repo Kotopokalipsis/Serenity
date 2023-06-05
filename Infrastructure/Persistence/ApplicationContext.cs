@@ -11,6 +11,11 @@ public class ApplicationContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
 {
     public DbSet<RefreshTokenBlacklist> RefreshTokenBlacklists { get; set; }
     public DbSet<Profile> Profiles { get; set; }
+    public DbSet<MedicalCard> MedicalCards { get; set; }
+    public DbSet<Record> Records { get; set; }
+    public DbSet<ServiceCategory> ServiceCategories { get; set; }
+    public DbSet<ServiceType> ServiceTypes { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     public ApplicationContext() : base() {}
 
@@ -33,6 +38,11 @@ public class ApplicationContext : IdentityDbContext<User, IdentityRole<Guid>, Gu
     {
         modelBuilder.ApplyConfiguration(new ProfileConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenBlacklistConfiguration());
+        modelBuilder.ApplyConfiguration(new MedicalCardConfiguration());
+        modelBuilder.ApplyConfiguration(new RecordConfiguration());
+        modelBuilder.ApplyConfiguration(new TagConfiguration());
+        modelBuilder.ApplyConfiguration(new ServiceCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new ServiceTypeConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }

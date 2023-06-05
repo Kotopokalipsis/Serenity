@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Application.Services;
 using Application.Common.Interfaces.Infrastructure.UnitOfWork;
 using Application.Common.Responses;
+using Application.Common.Services.ResponseHelper;
 using Ardalis.GuardClauses;
 using Domain.Entities;
 using Domain.Models;
@@ -26,19 +27,11 @@ public class NewRefreshTokenHandler : IRequestHandler<NewRefreshTokenQuery, IBas
 
     public async Task<IBaseResponse<Token>> Handle(NewRefreshTokenQuery request, CancellationToken ct)
     {
-        var oldRefreshToken = _cookieHelper.GetRefreshTokenFromCookie();
+        var user = await _tokenHelper.GetUserByRefreshToken();
 
-        if (string.IsNullOrEmpty(oldRefreshToken))
-        {
-            return GetValidationErrorResponse();
-        }
-
-        var user = await _tokenHelper.GetUserByRefreshToken(oldRefreshToken);
+        if (user == null) return ResponseHelper<Token>.GetRefreshTokenErrorResponse();
         
-        _unitOfWork.RefreshTokenBlacklistRepository.Add(new RefreshTokenBlacklist { RefreshToken = oldRefreshToken });
-        await _unitOfWork.Commit(ct);
-        
-        if (user == null) return GetValidationErrorResponse();
+        await _tokenHelper.BanRefreshToken();
 
         var newRefreshToken = await _tokenHelper.GenerateNewRefreshToken(user);
         
@@ -53,10 +46,4 @@ public class NewRefreshTokenHandler : IRequestHandler<NewRefreshTokenQuery, IBas
             Data = null
         };
     }
-
-    private static ErrorResponse<Token> GetValidationErrorResponse() => new()
-    {
-        StatusCode = 400,
-        Errors = new Dictionary<string, List<string>>{{"ValidationError", new List<string> {"Refresh token not valid"}}},
-    };
 }

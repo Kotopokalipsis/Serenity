@@ -11,6 +11,8 @@ namespace Application.Mapping
         {
             CreateMap<User, UserModel>();
             CreateMap<ProfileEntity, ProfileModel>();
+            CreateMap<MedicalCard, MedicalCardModel>();
+            CreateMap<Record, RecordModel>();
         }
     }
 }

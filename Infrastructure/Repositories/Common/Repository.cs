@@ -27,20 +27,17 @@ namespace Infrastructure.Repositories.Common
         
         public virtual TEntity Add(TEntity entity)
         {
-            return entity.IsTransient() ? _dbSet.Add(entity).Entity : entity;
+            return _dbSet.Add(entity).Entity;
         }
         
         public virtual TEntity Update(TEntity entity)
         {
-            return !entity.IsTransient() ? _dbSet.Update(entity).Entity : entity;
+            return _dbSet.Update(entity).Entity;
         }
         
-        public virtual bool Remove(TEntity entity)
+        public virtual void Remove(TEntity entity)
         {
-            if (entity.IsTransient()) return false;
-            
             _dbSet.Remove(entity);
-            return true;
         }
 
         public virtual async Task<bool> Any(Expression<Func<TEntity, bool>> predicate)
@@ -61,6 +58,11 @@ namespace Infrastructure.Repositories.Common
         public virtual async Task<TEntity> FindOneBy(Expression<Func<TEntity, bool>> predicate)
         {
             return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+        
+        public virtual async Task<IEnumerable<TEntity>> FindBy(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
         }
     }
 }

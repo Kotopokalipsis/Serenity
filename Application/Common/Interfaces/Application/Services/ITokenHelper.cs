@@ -7,5 +7,6 @@ public interface ITokenHelper
 {
     Task<string> GenerateNewRefreshToken(User user);
     Task<string> GenerateNewAccessToken(User user);
-    Task<User> GetUserByRefreshToken(string refreshToken);
+    Task<User> GetUserByRefreshToken();
+    Task BanRefreshToken(string refreshToken = null);
 }

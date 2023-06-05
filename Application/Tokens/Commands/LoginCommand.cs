@@ -2,6 +2,7 @@
 using Application.Common.Interfaces.Application.Services;
 using Application.Common.Interfaces.Infrastructure.UnitOfWork;
 using Application.Common.Responses;
+using Application.Common.Services.ResponseHelper;
 using Ardalis.GuardClauses;
 using Domain.Entities;
 using Domain.Models;
@@ -39,14 +40,8 @@ public class LoginHandler : IRequestHandler<LoginCommand, IBaseResponse<Token>>
     public async Task<IBaseResponse<Token>> Handle(LoginCommand request, CancellationToken ct)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
-        if (user == null)
-        {
-            return new ErrorResponse<Token>
-            {
-                StatusCode = 401,
-                Errors = new Dictionary<string, List<string>>{{"LoginError", new List<string> {"Access denied"}}},
-            };
-        }
+        
+        if (user == null) return ResponseHelper<Token>.GetAccessDeniedErrorResponse();
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
@@ -65,10 +60,6 @@ public class LoginHandler : IRequestHandler<LoginCommand, IBaseResponse<Token>>
             };
         }
 
-        return new ErrorResponse<Token>
-        {
-            StatusCode = 401,
-            Errors = new Dictionary<string, List<string>>{{"LoginError", new List<string> {"Access denied"}}},
-        };
+        return ResponseHelper<Token>.GetAccessDeniedErrorResponse();
     }
 }
